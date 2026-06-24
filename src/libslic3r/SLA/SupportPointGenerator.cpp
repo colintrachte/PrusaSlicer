@@ -241,7 +241,7 @@ NearPoints create_near_points(
 }
 
 /// <summary>
-/// Add support point to near_points when it is neccessary
+/// Add support point to near_points when it is necessary
 /// </summary>
 /// <param name="part">Current part - keep samples</param>
 /// <param name="config">Configuration to sample</param>

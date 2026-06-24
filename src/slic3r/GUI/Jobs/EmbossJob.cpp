@@ -42,7 +42,7 @@ using namespace Slic3r::GUI::Emboss;
 // Private implementation for create volume and objects jobs
 namespace {
 /// <summary>
-/// Hold neccessary data to create ModelVolume in job
+/// Hold necessary data to create ModelVolume in job
 /// Volume is created on the surface of existing volume in object.
 /// NOTE: EmbossDataBase::font_file doesn't have to be valid !!!
 /// </summary>
@@ -84,7 +84,7 @@ public:
 };
 
 /// <summary>
-/// Hold neccessary data to create ModelObject in job
+/// Hold necessary data to create ModelObject in job
 /// Object is placed on bed under screen coor
 /// OR to center of scene when it is out of bed shape
 /// </summary>
@@ -126,7 +126,7 @@ public:
 };
 
 /// <summary>
-/// Hold neccessary data to create(cut) volume from surface object in job
+/// Hold necessary data to create(cut) volume from surface object in job
 /// </summary>
 struct CreateSurfaceVolumeData : public SurfaceVolumeData
 {
@@ -951,7 +951,7 @@ TriangleMesh try_create_mesh(DataBase &input, const Fnc& was_canceled)
 template<typename Fnc>
 TriangleMesh create_mesh(DataBase &input, const Fnc& was_canceled, Job::Ctl& ctl)
 {
-    // It is neccessary to create some shape
+    // It is necessary to create some shape
     // Emboss text window is opened by creation new emboss text object
     TriangleMesh result = try_create_mesh(input, was_canceled);
     if (was_canceled())

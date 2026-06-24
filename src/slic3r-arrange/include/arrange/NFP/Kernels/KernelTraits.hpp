@@ -44,7 +44,7 @@ template<class Kernel, class En = void> struct KernelTraits_
         return k.on_start_packing(itm, bed, packing_context, remaining_items);
     }
 
-    // Called when an item has been succesfully packed. itm should have the
+    // Called when an item has been successfully packed. itm should have the
     // final translation and rotation already set.
     // Can return false to discard the item after the optimization.
     template<class ArrItem>

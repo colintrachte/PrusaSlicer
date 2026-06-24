@@ -1586,7 +1586,7 @@ void GLGizmoEmboss::draw_text_input()
             append_warning(_u8L("Text doesn't show current horizontal alignment."));
     }
     
-    // flag for extend font ranges if neccessary
+    // flag for extend font ranges if necessary
     // ranges can't be extend during font is activ(pushed)
     std::string range_text;
     float  window_height  = ImGui::GetWindowHeight();
@@ -3412,7 +3412,7 @@ void GLGizmoEmboss::create_notification_not_valid_font(
 }
 
 void GLGizmoEmboss::create_notification_not_valid_font(const std::string &text) {
-    // not neccessary, but for sure that old notification doesnt exist
+    // not necessary, but for sure that old notification doesnt exist
     if (m_is_unknown_font)
         remove_notification_not_valid_font();
     m_is_unknown_font = true;

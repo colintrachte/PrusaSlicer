@@ -21,7 +21,7 @@
 # To build dependencies for either 64 or 32 bit OS, use the respective compiler command line.
 #
 # WARNING: On UNIX platforms wxWidgets hardcode the destdir path into its `wx-conffig` utility,
-# therefore, unfortunatelly, the installation cannot be copied/moved elsewhere without re-installing wxWidgets.
+# therefore, unfortunately, the installation cannot be copied/moved elsewhere without re-installing wxWidgets.
 #
 cmake_minimum_required(VERSION 3.12)
 project(PrusaSlicer_deps)
@@ -285,4 +285,4 @@ endif ()
 
 set(DEP_MESSAGES_WRITTEN ON CACHE BOOL "")
 
-install(CODE "message(STATUS \"Built packages succesfully.\")")
+install(CODE "message(STATUS \"Built packages successfully.\")")

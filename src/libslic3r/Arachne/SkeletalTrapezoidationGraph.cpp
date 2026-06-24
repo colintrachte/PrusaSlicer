@@ -55,23 +55,13 @@ bool STHalfEdge::isUpward() const
         return false;
     }
 
-    // Equidistant edge case:
+    // Equidistant edge case: use optional comparison so twin edges always evaluate oppositely.
     std::optional<coord_t> forward_up_dist = this->distToGoUp();
     std::optional<coord_t> backward_up_dist = twin->distToGoUp();
-    if (forward_up_dist && backward_up_dist)
-    {
-        return forward_up_dist < backward_up_dist;
-    }
-
-    if (forward_up_dist)
-    {
+    if (forward_up_dist < backward_up_dist)
         return true;
-    }
-
-    if (backward_up_dist)
-    {
+    if (forward_up_dist > backward_up_dist)
         return false;
-    }
     return to->p < from->p; // Arbitrary ordering, which returns the opposite for the twin edge
 }
 

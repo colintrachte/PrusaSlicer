@@ -281,8 +281,8 @@ PhysicalPrinterDialog::PhysicalPrinterDialog(wxWindow* parent, wxString printer_
         const std::set<std::string>& preset_names = printer->get_preset_names();
         for (const std::string& preset_name : preset_names)
             m_presets.emplace_back(new PresetForPrinter(this, preset_name));
-        // "stored" indicates data are stored secretly, load them from store.
-        if (m_printer.config.opt_string("printhost_password") == "stored" && m_printer.config.opt_string("printhost_password") == "stored") {
+        // "stored" indicates the password was saved to the OS secret store.
+        if (m_printer.config.opt_string("printhost_password") == "stored") {
             std::string username;
             std::string password;
             if (load_secret(m_printer.name, "printhost_password", username, password)) {
@@ -291,7 +291,9 @@ PhysicalPrinterDialog::PhysicalPrinterDialog(wxWindow* parent, wxString printer_
                 if (!password.empty())
                     m_printer.config.opt_string("printhost_password") = password;
             } else {
-                m_printer.config.opt_string("printhost_user") = std::string();
+                // Keychain load failed — keep username (it's stored as plaintext in the
+                // config) and clear only the "stored" placeholder so the user can re-enter.
+                BOOST_LOG_TRIVIAL(warning) << "Failed to load printhost_password from secret store for printer: " << m_printer.name;
                 m_printer.config.opt_string("printhost_password") = std::string();
             }
         }
@@ -599,6 +601,30 @@ void PhysicalPrinterDialog::build_printhost_settings(ConfigOptionsGroup* m_optgr
                     temp->SetValue(trimed_str);
 
                 TextCtrl* field = dynamic_cast<TextCtrl*>(printhost_field);
+                if (field)
+                    field->propagate_value();
+            }), temp->GetId());
+        }
+    }
+
+    Field* apikey_field = m_optgroup->get_field("printhost_apikey");
+    if (apikey_field)
+    {
+        text_ctrl* temp = dynamic_cast<text_ctrl*>(apikey_field->getWindow());
+        if (temp) {
+            temp->Bind(wxEVT_TEXT, ([apikey_field, temp](wxEvent& e)
+            {
+#ifndef __WXGTK__
+                e.Skip();
+                temp->GetToolTip()->Enable(true);
+#endif // __WXGTK__
+                // Remove all leading and trailing spaces from the API key input
+                std::string trimed_str, str = trimed_str = temp->GetValue().ToStdString();
+                boost::trim(trimed_str);
+                if (trimed_str != str)
+                    temp->SetValue(trimed_str);
+
+                TextCtrl* field = dynamic_cast<TextCtrl*>(apikey_field);
                 if (field)
                     field->propagate_value();
             }), temp->GetId());

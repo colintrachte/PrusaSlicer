@@ -739,7 +739,7 @@ RENDER_AGAIN:
         float old_density = density;
         wxString tooltip = _L("Change amount of generated support points.");
         if (m_imgui->slider_float("##density", &density, 50.f, 200.f, "%.f %%", 1.f, false, tooltip)){
-            if (density < 10.f) // not neccessary, but lower value seems pointless. Zero cause issues inside algorithms.
+            if (density < 10.f) // not necessary, but lower value seems pointless. Zero cause issues inside algorithms.
                 density = 10.f;
             mo->config.set(support_points_density, (int) density);
         }

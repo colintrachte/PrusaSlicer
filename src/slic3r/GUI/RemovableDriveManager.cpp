@@ -856,7 +856,7 @@ void RemovableDriveManager::eject_drive()
 	{
 		//std::cout<<"Ejecting "<<(*it).name<<" from "<< correct_path<<"\n";
 		// there is no usable command in c++ so terminal command is used instead
-		// but neither triggers "succesful safe removal messege"
+		// but neither triggers "successful safe removal messege"
 		
 		BOOST_LOG_TRIVIAL(info) << "Ejecting started";
 		boost::process::ipstream istd_err;

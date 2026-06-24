@@ -147,7 +147,7 @@ bool Moonraker::test(wxString& msg) const
     return res;
 }
 
-bool Moonraker::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const
+bool Moonraker::upload(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const
 {
     // POST /server/files/upload
 
@@ -222,7 +222,7 @@ bool Moonraker::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, Erro
             res = false;
         })
         .on_progress([&](Http::Progress progress, bool& cancel) {
-            prorgess_fn(std::move(progress), cancel);
+            progress_fn(std::move(progress), cancel);
             if (cancel) {
                 // Upload was canceled
                 BOOST_LOG_TRIVIAL(info) << name << ": Upload canceled";

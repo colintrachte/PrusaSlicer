@@ -39,7 +39,7 @@ class BranchingTreeBuilder: public branchingtree::Builder {
 
     std::vector<branchingtree::Node> m_pillars; // to put an index over them
 
-    // cache succesfull ground connections
+    // cache successfull ground connections
     mutable std::map<int, GroundConnection> m_gnd_connections;
     mutable execution::SpinningMutex<ExecutionTBB>  m_gnd_connections_mtx;
 

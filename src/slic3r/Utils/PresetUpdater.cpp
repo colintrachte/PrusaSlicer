@@ -322,7 +322,7 @@ void PresetUpdater::priv::sync_config(const VendorMap& vendors, const ArchiveRep
 	enum class VendorStatus
 	{
 		IN_ARCHIVE, // index was unzipped from archive to /cache/vendors/
-		IN_CACHE, // vendor does exists in index_db, probably bc its ini is in resources and idx was copied to /cache/. It is not istalled, so new version of ini would be in  /cache/vendors/
+		IN_CACHE, // vendor does exists in index_db, probably bc its ini is in resources and idx was copied to /cache/. It is not installed, so new version of ini would be in  /cache/vendors/
 		INSTALLED, // vendor is installed, ini is in /vendors/ folder, no new version is available.
 		NEW_VERSION, // vendor is installed, in /cache/ is new ini version waiting for installation.
 		
@@ -454,7 +454,7 @@ void PresetUpdater::priv::sync_config(const VendorMap& vendors, const ArchiveRep
 		// vendors that are checked here, doesnt need to be checked again later
 		archive_it->second = VendorStatus::NEW_VERSION;
 
-		// Download recomended ini to cache
+		// Download recommended ini to cache
 		const auto path_in_cache = cache_path / (vendor.id + ".ini");
 		BOOST_LOG_TRIVIAL(info) << "Downloading new bundle for vendor: " << vendor.name;
 		const std::string source_subpath = GUI::format("%1%/%2%.ini", vendor.id, recommended.to_string());
@@ -607,7 +607,7 @@ void PresetUpdater::priv::sync_config(const VendorMap& vendors, const ArchiveRep
 			const auto recommended_archive = recommended_it_archive->config_version;
 			
 			if (recommended_archive <= recommended_cache) {
-				// There isn't  more recent recomended version online. This vendor is also not istalled.
+				// There isn't  more recent recommended version online. This vendor is also not installed.
 				// Thus only .ini is in resources and came with installation.
 				// And we expect all resources are present.
 				continue;

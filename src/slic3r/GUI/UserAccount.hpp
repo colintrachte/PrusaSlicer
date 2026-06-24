@@ -56,7 +56,7 @@ public:
 
     // Functions called from UI where events emmited from UserAccountSession are binded
     // Returns bool if data were correctly proccessed
-    bool on_login_code_recieved(const std::string& url_message);
+    bool on_login_code_received(const std::string& url_message);
     bool on_user_id_success(const std::string data, std::string& out_username, bool after_token_success);
     // Called on EVT_UA_FAIL, triggers test after several calls
     void on_communication_fail();

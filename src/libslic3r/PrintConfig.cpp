@@ -1564,8 +1564,8 @@ void PrintConfigDef::init_fff_params()
                      "enter 1%.");
     def->sidetext = L("%");
     def->mode = comAdvanced;
-    def->min = -10.;
-    def->max = 10.;
+    def->min = -50.;
+    def->max = 50.;
     def->set_default_value(new ConfigOptionPercents { 0 });
 
     def = this->add("filament_shrinkage_compensation_z", coPercents);
@@ -1575,8 +1575,8 @@ void PrintConfigDef::init_fff_params()
                      "enter 1%.");
     def->sidetext = L("%");
     def->mode = comAdvanced;
-    def->min = -10.;
-    def->max = 10.;
+    def->min = -50.;
+    def->max = 50.;
     def->set_default_value(new ConfigOptionPercents { 0. });
 
     def = this->add("filament_flush_volume", coFloats);

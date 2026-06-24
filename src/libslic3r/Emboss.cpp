@@ -1325,7 +1325,7 @@ namespace {
 /// Align shape against pivot
 /// </summary>
 /// <param name="shapes">Shapes to align
-/// Prerequisities: shapes are aligned left top</param>
+/// Prerequisites: shapes are aligned left top</param>
 /// <param name="text">To detect end of lines - to be able horizontal center the line</param>
 /// <param name="prop">Containe Horizontal and vertical alignment</param>
 /// <param name="font">Needed for scale and font size</param>

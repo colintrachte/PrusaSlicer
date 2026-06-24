@@ -605,7 +605,7 @@ void SkeletalTrapezoidation::filterCentral(coord_t max_length)
 {
     for (edge_t& edge : graph.edges)
     {
-        if (isEndOfCentral(edge) && edge.to->isLocalMaximum() && !edge.to->isLocalMaximum())
+        if (isEndOfCentral(edge) && !edge.from->isLocalMaximum() && !edge.to->isLocalMaximum())
         {
             filterCentral(edge.twin, 0, max_length);
         }
@@ -2072,6 +2072,10 @@ void SkeletalTrapezoidation::generateLocalMaximaSingleBeads()
             generated_toolpaths[inset_index].emplace_back(inset_index, is_odd);
             ExtrusionLine& line = generated_toolpaths[inset_index].back();
             const coord_t width = beading.bead_widths[inset_index];
+            if (width < scaled<coord_t>(0.005))
+            {
+                continue;
+            }
             // total area to be extruded is pi*(w/2)^2 = pi*w*w/4
             // Width a constant extrusion width w, that would be a length of pi*w/4
             // If we make a small circle to fill up the hole, then that circle would have a circumference of 2*pi*r

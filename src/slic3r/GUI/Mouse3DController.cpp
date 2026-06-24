@@ -825,7 +825,7 @@ bool Mouse3DController::connect_device()
     // When using 3Dconnexion universal receiver, multiple devices are detected sharing the same vendor_id and product_id.
     // To choose from them the right one we use:
     // On Windows and Mac: usage_page == 1 and usage == 8
-    // On Linux: as usage_page and usage are not defined (see hidapi.h) we try all detected devices until one is succesfully open
+    // On Linux: as usage_page and usage are not defined (see hidapi.h) we try all detected devices until one is successfully open
     // When only a single device is detected, as for wired connections, vendor_id and product_id are enough
 
     // First we count all the valid devices from the enumerated list,

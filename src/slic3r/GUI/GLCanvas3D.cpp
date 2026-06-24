@@ -4957,6 +4957,13 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
     std::vector<ColorRGBA> extruders_colors             = GUI::wxGetApp().plater()->get_extruder_colors_from_plater_config();
     const bool             is_enabled_painted_thumbnail = !model_objects.empty() && !extruders_colors.empty();
 
+    std::vector<CustomGCode::Item> color_changes;
+    for (const auto& item : thumbnail_params.color_changes.gcodes) {
+        if (item.type == CustomGCode::ColorChange || item.type == CustomGCode::ToolChange)
+            color_changes.push_back(item);
+    }
+    std::sort(color_changes.begin(), color_changes.end());
+
     if (thumbnail_params.transparent_background)
 //        glsafe(::glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
         glsafe(::glClearColor(0.4f, 0.4f, 0.4f, 0.0f));
@@ -5015,6 +5022,39 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
             ts.request_update_render_data();
 
             ts.render(nullptr, model_matrix);
+        }
+        else if (!color_changes.empty()) {
+            GLShaderProgram* mm_shader = wxGetApp().get_shader("mm_gouraud");
+            if (mm_shader) {
+                mm_shader->start_using();
+                mm_shader->set_uniform("volume_world_matrix", vol->world_matrix());
+                mm_shader->set_uniform("volume_mirrored", is_left_handed);
+                mm_shader->set_uniform("clipping_plane", std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 0.0f });
+                mm_shader->set_uniform("view_model_matrix", view_matrix * model_matrix);
+                mm_shader->set_uniform("projection_matrix", projection_matrix);
+                mm_shader->set_uniform("view_normal_matrix", view_normal_matrix);
+
+                double last_z = -FLT_MAX;
+                ColorRGBA current_color = vol->color;
+
+                glsafe(::glDepthFunc(GL_LEQUAL));
+                for (const auto& item : color_changes) {
+                    mm_shader->set_uniform("z_range", std::array<float, 2>{ (float)last_z, (float)item.print_z });
+                    mm_shader->set_uniform("uniform_color", current_color);
+                    vol->render();
+                    last_z = item.print_z;
+                    ColorRGB rgb;
+                    if (decode_color(item.color, rgb))
+                        current_color = ColorRGBA(rgb(0), rgb(1), rgb(2), 1.0f);
+                }
+                mm_shader->set_uniform("z_range", std::array<float, 2>{ (float)last_z, (float)FLT_MAX });
+                mm_shader->set_uniform("uniform_color", current_color);
+                vol->render();
+                glsafe(::glDepthFunc(GL_LESS));
+
+                mm_shader->stop_using();
+                shader->start_using();
+            }
         }
         else
             vol->render();

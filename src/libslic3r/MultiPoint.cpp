@@ -121,7 +121,7 @@ bool MultiPoint::remove_duplicate_points()
 /*
      struct - vis_node
      Used with the visivalignam simplification algorithm, which needs to be able to find a points
-    successors and predecessors to operate succesfully. Since this struct is only used in one
+    successors and predecessors to operate successfully. Since this struct is only used in one
     location, it could probably be dropped into a namespace to avoid polluting the slic3r namespace.
      Source: https://github.com/shortsleeves/visvalingam_simplify
      ^ Provided original algorithm implementation. I've only changed things a bit to "clean" them up

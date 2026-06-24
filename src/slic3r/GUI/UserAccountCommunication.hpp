@@ -70,7 +70,7 @@ public:
     // 
     // Called when browser returns code via prusaslicer:// custom url.
     // Exchanges code for tokens and shared_session_key
-    void on_login_code_recieved(const std::string& url_message);
+    void on_login_code_received(const std::string& url_message);
 
     void on_activate_app(bool active);
 

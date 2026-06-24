@@ -253,6 +253,7 @@ void BackgroundSlicingProcess::thread_proc()
 		// Process the background slicing task.
 		m_state = STATE_RUNNING;
 		lck.unlock();
+        BOOST_LOG_TRIVIAL(info) << "Background slicing started";
 		std::exception_ptr exception;
 #ifdef _WIN32
 		this->call_process_seh_throw(exception);
@@ -260,6 +261,12 @@ void BackgroundSlicingProcess::thread_proc()
 		this->call_process(exception);
 #endif
 		m_print->finalize();
+        if (m_print->canceled())
+            BOOST_LOG_TRIVIAL(info) << "Background slicing cancelled";
+        else if (exception)
+            BOOST_LOG_TRIVIAL(error) << "Background slicing failed";
+        else
+            BOOST_LOG_TRIVIAL(info) << "Background slicing finished";
 		lck.lock();
 		m_state = m_print->canceled() ? STATE_CANCELED : STATE_FINISHED;
 		if (m_print->cancel_status() != Print::CANCELED_INTERNAL) {
@@ -717,7 +724,7 @@ void BackgroundSlicingProcess::finalize_gcode(const std::string &path, const boo
 	catch (...)
 	{
 		remove_post_processed_temp_file();
-		throw Slic3r::ExportError(_u8L("Unknown error occured during exporting G-code."));
+		throw Slic3r::ExportError(_u8L("Unknown error occurred during exporting G-code."));
 	}
 	switch (copy_ret_val) {
 	case CopyFileResult::SUCCESS: break; // no error
@@ -737,7 +744,7 @@ void BackgroundSlicingProcess::finalize_gcode(const std::string &path, const boo
 		throw Slic3r::ExportError(GUI::format(_L("Copying of the temporary G-code has finished but the exported code couldn't be opened during copy check. The output G-code is at %1%.tmp."), export_path));
 		break;
 	default:
-		throw Slic3r::ExportError(_u8L("Unknown error occured during exporting G-code."));
+		throw Slic3r::ExportError(_u8L("Unknown error occurred during exporting G-code."));
 		BOOST_LOG_TRIVIAL(error) << "Unexpected fail code(" << (int)copy_ret_val << ") durring copy_file() to " << export_path << ".";
 		break;
 	}
@@ -796,8 +803,11 @@ void BackgroundSlicingProcess::prepare_upload(PrintHostJob &upload_job)
 ThumbnailsList BackgroundSlicingProcess::render_thumbnails(const ThumbnailsParams &params)
 {
 	ThumbnailsList thumbnails;
-	if (m_thumbnail_cb)
-		this->execute_ui_task([this, &params, &thumbnails](){ thumbnails = m_thumbnail_cb(params); });
+	if (m_thumbnail_cb) {
+		ThumbnailsParams p = params;
+		p.color_changes = m_print->model().custom_gcode_per_print_z();
+		this->execute_ui_task([this, &p, &thumbnails](){ thumbnails = m_thumbnail_cb(p); });
+	}
 	return thumbnails;
 }
 

@@ -831,7 +831,7 @@ void VoronoiGraphUtils::reshape_longest_path(VoronoiGraph::ExPath &path)
         branches.pop();
         std::reverse(new_main_branch.nodes.begin(),
                      new_main_branch.nodes.end());
-        // add old main path store into side branches - may be it is not neccessary
+        // add old main path store into side branches - may be it is not necessary
         branches.push(std::move(side_branch));
 
         // swap side branch with main branch

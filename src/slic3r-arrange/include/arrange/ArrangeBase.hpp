@@ -92,7 +92,7 @@ PackStrategyContext<PackStrategy, ArrItem> create_context(PackStrategy &&ps,
 //          strategy.
 // 'bed' parameter is the type of bed into which the new item should be packed.
 //       See beds.hpp for valid bed classes.
-// 'item' parameter is the item to be packed. After succesful arrangement
+// 'item' parameter is the item to be packed. After successful arrangement
 //        (see return value) the item will have it's translation and rotation
 //        set correctly. If the function returns false, the translation and
 //        rotation of the input item might be changed to arbitrary values.

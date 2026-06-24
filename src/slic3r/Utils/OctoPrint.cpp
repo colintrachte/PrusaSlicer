@@ -12,6 +12,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/asio.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -164,7 +165,7 @@ std::string escape_path_by_element(const boost::filesystem::path& path)
 
 OctoPrint::OctoPrint(DynamicPrintConfig *config) :
     m_host(config->opt_string("print_host")),
-    m_apikey(config->opt_string("printhost_apikey")),
+    m_apikey(boost::trim_copy(config->opt_string("printhost_apikey"))),
     m_cafile(config->opt_string("printhost_cafile")),
     m_ssl_revoke_best_effort(config->opt_bool("printhost_ssl_ignore_revoke"))
 {}
@@ -299,10 +300,10 @@ wxString OctoPrint::get_test_failed_msg (wxString &msg) const
         , _L("Note: OctoPrint version at least 1.1.0 is required."));
 }
 
-bool OctoPrint::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const
+bool OctoPrint::upload(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const
 {
 #ifndef WIN32
-    return upload_inner_with_host(std::move(upload_data), prorgess_fn, error_fn, info_fn);
+    return upload_inner_with_host(std::move(upload_data), progress_fn, error_fn, info_fn);
 #else
     std::string host = get_host_from_url(m_host);
 
@@ -329,19 +330,19 @@ bool OctoPrint::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, Erro
     if (resolved_addr.empty()) {
         // no resolved addresses - try system resolving
         BOOST_LOG_TRIVIAL(error) << "PrusaSlicer failed to resolve hostname " << m_host << " into the IP address. Starting upload with system resolving.";
-        return upload_inner_with_host(std::move(upload_data), prorgess_fn, error_fn, info_fn);
+        return upload_inner_with_host(std::move(upload_data), progress_fn, error_fn, info_fn);
     } else if (resolved_addr.size() == 1) {
         // one address resolved - upload there
-        return upload_inner_with_resolved_ip(std::move(upload_data), prorgess_fn, error_fn, info_fn, resolved_addr.front());
+        return upload_inner_with_resolved_ip(std::move(upload_data), progress_fn, error_fn, info_fn, resolved_addr.front());
     }  else if (resolved_addr.size() == 2 && resolved_addr[0].is_v4() != resolved_addr[1].is_v4()) {
         // there are just 2 addresses and 1 is ip_v4 and other is ip_v6
         // try sending to both. (Then if both fail, show both error msg after second try)
         wxString error_message;
-        if (!upload_inner_with_resolved_ip(std::move(upload_data), prorgess_fn
+        if (!upload_inner_with_resolved_ip(std::move(upload_data), progress_fn
             , [&msg = error_message, resolved_addr](wxString error) { msg = GUI::format_wxstr("%1%: %2%", resolved_addr.front(), error); }
             , info_fn, resolved_addr.front())
             &&
-            !upload_inner_with_resolved_ip(std::move(upload_data), prorgess_fn
+            !upload_inner_with_resolved_ip(std::move(upload_data), progress_fn
             , [&msg = error_message, resolved_addr](wxString error) { msg += GUI::format_wxstr("\n%1%: %2%", resolved_addr.back(), error); }
             , info_fn, resolved_addr.back())
             ) {
@@ -355,14 +356,14 @@ bool OctoPrint::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, Erro
         size_t selected_index = resolved_addr.size(); 
         IPListDialog dialog(nullptr, boost::nowide::widen(m_host), resolved_addr, selected_index);
         if (dialog.ShowModal() == wxID_OK && selected_index < resolved_addr.size()) {    
-            return upload_inner_with_resolved_ip(std::move(upload_data), prorgess_fn, error_fn, info_fn, resolved_addr[selected_index]);
+            return upload_inner_with_resolved_ip(std::move(upload_data), progress_fn, error_fn, info_fn, resolved_addr[selected_index]);
         }
     }
     return false;
 #endif // WIN32
 }
 #ifdef WIN32
-bool OctoPrint::upload_inner_with_resolved_ip(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn, const boost::asio::ip::address& resolved_addr) const
+bool OctoPrint::upload_inner_with_resolved_ip(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn, const boost::asio::ip::address& resolved_addr) const
 {
     info_fn(L"resolve", boost::nowide::widen(resolved_addr.to_string()));
 
@@ -413,7 +414,7 @@ bool OctoPrint::upload_inner_with_resolved_ip(PrintHostUpload upload_data, Progr
             result = false;
         })
         .on_progress([&](Http::Progress progress, bool& cancel) {
-            prorgess_fn(std::move(progress), cancel);
+            progress_fn(std::move(progress), cancel);
             if (cancel) {
                 // Upload was canceled
                 BOOST_LOG_TRIVIAL(info) << name << ": Upload canceled";
@@ -427,7 +428,7 @@ bool OctoPrint::upload_inner_with_resolved_ip(PrintHostUpload upload_data, Progr
 }
 #endif //WIN32
 
-bool OctoPrint::upload_inner_with_host(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const
+bool OctoPrint::upload_inner_with_host(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const
 {
     const char* name = get_name();
 
@@ -500,7 +501,7 @@ bool OctoPrint::upload_inner_with_host(PrintHostUpload upload_data, ProgressFn p
             res = false;
         })
         .on_progress([&](Http::Progress progress, bool& cancel) {
-            prorgess_fn(std::move(progress), cancel);
+            progress_fn(std::move(progress), cancel);
             if (cancel) {
                 // Upload was canceled
                 BOOST_LOG_TRIVIAL(info) << name << ": Upload canceled";
@@ -942,7 +943,7 @@ bool PrusaLink::test_with_resolved_ip_and_method_check(wxString& msg, bool& use_
     return res;
 }
 
-bool PrusaLink::upload_inner_with_resolved_ip(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn, const boost::asio::ip::address& resolved_addr) const
+bool PrusaLink::upload_inner_with_resolved_ip(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn, const boost::asio::ip::address& resolved_addr) const
 {
     info_fn(L"resolve", boost::nowide::widen(resolved_addr.to_string()));
 
@@ -975,13 +976,13 @@ bool PrusaLink::upload_inner_with_resolved_ip(PrintHostUpload upload_data, Progr
         % (use_put ? "PUT" : "POST");
 
     if (use_put)
-        return put_inner(std::move(upload_data), std::move(url), name, prorgess_fn, error_fn, info_fn);
-    return post_inner(std::move(upload_data), std::move(url), name, prorgess_fn, error_fn, info_fn);
+        return put_inner(std::move(upload_data), std::move(url), name, progress_fn, error_fn, info_fn);
+    return post_inner(std::move(upload_data), std::move(url), name, progress_fn, error_fn, info_fn);
 }
 
 #endif //WIN32
 
-bool PrusaLink::upload_inner_with_host(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const
+bool PrusaLink::upload_inner_with_host(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const
 {
     const char* name = get_name();
 
@@ -1033,11 +1034,11 @@ bool PrusaLink::upload_inner_with_host(PrintHostUpload upload_data, ProgressFn p
         % (use_put ? "PUT" : "POST");
 
     if (use_put)
-        return put_inner(std::move(upload_data), std::move(url), name, prorgess_fn, error_fn, info_fn);
-    return post_inner(std::move(upload_data), std::move(url), name, prorgess_fn, error_fn, info_fn);
+        return put_inner(std::move(upload_data), std::move(url), name, progress_fn, error_fn, info_fn);
+    return post_inner(std::move(upload_data), std::move(url), name, progress_fn, error_fn, info_fn);
 }
 
-bool PrusaLink::put_inner(PrintHostUpload upload_data, std::string url, const std::string& name, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const
+bool PrusaLink::put_inner(PrintHostUpload upload_data, std::string url, const std::string& name, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const
 {
     info_fn(L"set_complete_off", wxString());
 
@@ -1073,7 +1074,7 @@ bool PrusaLink::put_inner(PrintHostUpload upload_data, std::string url, const st
             res = false;
         })
         .on_progress([&](Http::Progress progress, bool& cancel) {
-            prorgess_fn(std::move(progress), cancel);
+            progress_fn(std::move(progress), cancel);
             if (cancel) {
                 // Upload was canceled
                 BOOST_LOG_TRIVIAL(info) << "Octoprint: Upload canceled";
@@ -1087,7 +1088,7 @@ bool PrusaLink::put_inner(PrintHostUpload upload_data, std::string url, const st
 
     return res;
 }
-bool PrusaLink::post_inner(PrintHostUpload upload_data, std::string url, const std::string& name, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const
+bool PrusaLink::post_inner(PrintHostUpload upload_data, std::string url, const std::string& name, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const
 {
     info_fn(L"set_complete_off", wxString());
     bool res = true;
@@ -1132,7 +1133,7 @@ bool PrusaLink::post_inner(PrintHostUpload upload_data, std::string url, const s
             res = false;
         })
         .on_progress([&](Http::Progress progress, bool& cancel) {
-            prorgess_fn(std::move(progress), cancel);
+            progress_fn(std::move(progress), cancel);
             if (cancel) {
                 // Upload was canceled
                 BOOST_LOG_TRIVIAL(info) << "Octoprint: Upload canceled";

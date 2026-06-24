@@ -1801,7 +1801,7 @@ size_t detect_interface(IslandParts &island_parts, size_t part_index, const Neig
 /// <param name="index">Merge into</param>
 /// <param name="remove_index">Merge from</param>
 void merge_island_parts(IslandParts &island_parts, size_t index, size_t remove_index){
-    // It is better to remove bigger index, not neccessary
+    // It is better to remove bigger index, not necessary
     assert(index < remove_index);
     // merge part interfaces
     IslandPartChanges &changes = island_parts[index].changes;
@@ -2738,7 +2738,7 @@ SupportIslandPoints uniform_support_island(
     for (const ThinPart &part : thin) create_supports_for_thin_part(part, supports, config);
     for (const ThickPart &part : thick) create_supports_for_thick_part(part, supports, lines, config);
 
-    // At least 2 support points are neccessary after thin/thick sampling heuristic
+    // At least 2 support points are necessary after thin/thick sampling heuristic
     if (supports.size() <= 2){
         SupportIslandInnerPoint::Type type = SupportIslandInnerPoint::Type::two_points_backup;
         SupportIslandPoints two_supports = create_side_points(longest_path, lines, config, type);

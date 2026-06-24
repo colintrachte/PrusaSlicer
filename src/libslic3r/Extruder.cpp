@@ -65,8 +65,11 @@ std::pair<double, double> Extruder::retract(double retract_length, double restar
         m_E             -= to_retract;
         m_absolute_E    -= to_retract;
         m_retracted     += to_retract;
-        m_restart_extra  = restart_extra;
     }
+    // Always update restart_extra so it is available for unretract even when
+    // the wipe path has already performed the full retraction via extrude() calls
+    // (which update m_retracted but do not set m_restart_extra). Fixes #11178.
+    m_restart_extra = restart_extra;
     return std::make_pair(to_retract, m_E);
 }
 

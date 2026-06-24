@@ -17,5 +17,5 @@ If possible, please include the following information when [reporting an issue](
 
 Please make sure only to include one issue per report. If you encounter multiple, unrelated issues, please report them as such.
 
-Simon Tatham has written an excellent on article on [How to Report Bugs Effectively](http://www.chiark.greenend.org.uk/~sgtatham/bugs.html) which is well worth reading, although it is not specific to PrusaSlicer.
+Simon Tatham has written an excellent article on [How to Report Bugs Effectively](http://www.chiark.greenend.org.uk/~sgtatham/bugs.html) which is well worth reading, although it is not specific to PrusaSlicer.
 

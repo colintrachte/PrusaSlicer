@@ -11,7 +11,7 @@ Instead of compiling PrusaSlicer from source code, one may also consider to inst
 
 This guide describes building PrusaSlicer statically against dependencies pulled by our `deps` script. Running all the listed commands in order should result in successful build.
 
-#### 0. Prerequisities
+#### 0. Prerequisites
 
 You need at least 8GB of RAM on your system. Linking on a 4GB RAM system will likely fail and you may need to limit the number of compiler processes with the '-j xxx' make or ninja parameter, where 'xxx' is the number of compiler processes launched if running on low RAM multi core system, for example on Raspberry PI.
 

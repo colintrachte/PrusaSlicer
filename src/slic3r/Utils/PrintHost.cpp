@@ -262,7 +262,7 @@ void PrintHostJobQueue::priv::progress_fn(Http::Progress progress, bool &cancel)
 
 void PrintHostJobQueue::priv::error_fn(wxString error)
 {
-    // check if transfer was not canceled before error occured - than do not show the error
+    // check if transfer was not canceled before error occurred - than do not show the error
     bool do_emit_err = true;
     if (channel_cancels.size_hint() > 0) {
         // Lock both queues
@@ -313,6 +313,8 @@ void PrintHostJobQueue::priv::remove_source()
 
 void PrintHostJobQueue::priv::perform_job(PrintHostJob the_job)
 {
+    BOOST_LOG_TRIVIAL(info) << "Uploading to " << the_job.printhost->get_host()
+        << ": " << the_job.upload_data.upload_path;
     emit_progress(0);   // Indicate the upload is starting
 
     bool success = the_job.printhost->upload(std::move(the_job.upload_data),

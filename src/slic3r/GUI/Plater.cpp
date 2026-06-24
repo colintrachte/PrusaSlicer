@@ -56,9 +56,10 @@
 #include <wx/debug.h>
 #include <wx/busyinfo.h>
 #include <wx/stdpaths.h>
-#if wxUSE_SECRETSTORE 
+#if wxUSE_SECRETSTORE
 #include <wx/secretstore.h>
 #endif
+#include <wx/notifmsg.h>
 
 #include <LibBGCode/convert/convert.hpp>
 
@@ -976,7 +977,7 @@ void Plater::priv::init()
         }); 
         this->q->Bind(EVT_LOGIN_OTHER_INSTANCE, [this](LoginOtherInstanceEvent& evt) {
             BOOST_LOG_TRIVIAL(trace) << "Received login from other instance event.";
-            user_account->on_login_code_recieved(evt.data);
+            user_account->on_login_code_received(evt.data);
         });
         this->q->Bind(EVT_STORE_READ_REQUEST, [this](SimpleEvent& evt) {
             BOOST_LOG_TRIVIAL(debug) << "Received store read request from other instance event.";
@@ -985,14 +986,14 @@ void Plater::priv::init()
         
         this->q->Bind(EVT_LOGIN_VIA_WIZARD, [this](Event<std::string> &evt) {
             BOOST_LOG_TRIVIAL(trace) << "Received login from wizard.";
-            user_account->on_login_code_recieved(evt.data);
+            user_account->on_login_code_received(evt.data);
         });
         this->q->Bind(EVT_OPEN_PRUSAAUTH, [this](OpenPrusaAuthEvent& evt) {
             BOOST_LOG_TRIVIAL(info)  << "open login browser: " << evt.data.first;
             std::string dialog_msg;
             login_dialog = new LoginWebViewDialog(this->q, dialog_msg, evt.data.first, this->q);
             if (login_dialog->ShowModal() == wxID_OK) {
-                user_account->on_login_code_recieved(dialog_msg);
+                user_account->on_login_code_received(dialog_msg);
             }
             if (login_dialog != nullptr) {
                 this->q->RemoveChild(login_dialog);
@@ -1072,8 +1073,8 @@ void Plater::priv::init()
  
             } else {
                 // data were corrupt and username was not retrieved
-                // procced as if EVT_UA_RESET was recieved
-                BOOST_LOG_TRIVIAL(error) << "Reseting Prusa Account communication. Recieved data were corrupt.";
+                // proceed as if EVT_UA_RESET was received
+                BOOST_LOG_TRIVIAL(error) << "Resetting Prusa Account communication. Received data were corrupt.";
                 user_account->clear();
                 this->notification_manager->close_notification_of_type(NotificationType::UserAccountID);
                 this->notification_manager->push_notification(NotificationType::UserAccountID, NotificationManager::NotificationLevel::WarningNotificationLevel, _u8L("Failed to connect to Prusa Account."));
@@ -3552,6 +3553,16 @@ void Plater::priv::on_process_completed(SlicingProcessCompletedEvent &evt)
     this->sidebar->show_sliced_info_sizer(evt.success());
     if (evt.success()) {
         s_print_statuses[s_multiple_beds.get_active_bed()] = PrintStatus::finished;
+        // Send an OS-level notification when the window is not active so the user
+        // knows slicing is done while they're working elsewhere (resolves #11970).
+        if (wxGetApp().mainframe && !wxGetApp().mainframe->IsActive()) {
+            wxNotificationMessage notif(
+                wxString::FromUTF8(SLIC3R_APP_NAME),
+                _L("G-code generation finished."),
+                wxGetApp().mainframe
+            );
+            notif.Show();
+        }
     }
 
     // This updates the "Slice now", "Export G-code", "Arrange" buttons status.
@@ -3727,10 +3738,12 @@ ThumbnailsList Plater::priv::generate_thumbnails(const ThumbnailsParams& params,
     s_multiple_beds.set_thumbnail_bed_idx(s_multiple_beds.get_active_bed());
     ScopeGuard guard([]() { s_multiple_beds.set_thumbnail_bed_idx(-1); });
     ThumbnailsList thumbnails;
-    for (const Vec2d& size : params.sizes) {
+    ThumbnailsParams p = params;
+    p.color_changes = q->model().custom_gcode_per_print_z();
+    for (const Vec2d& size : p.sizes) {
         thumbnails.push_back(ThumbnailData());
         Point isize(size); // round to ints
-        generate_thumbnail(thumbnails.back(), isize.x(), isize.y(), params, camera_type);
+        generate_thumbnail(thumbnails.back(), isize.x(), isize.y(), p, camera_type);
         if (!thumbnails.back().is_valid())
             thumbnails.pop_back();
     }

@@ -307,6 +307,7 @@ static ConfigFileInfo check_config_file_and_verify_checksum(boost::nowide::ifstr
 
 std::string AppConfig::load(const std::string &path)
 {
+    BOOST_LOG_TRIVIAL(info) << "Loading app configuration from: " << path;
     this->reset();
 
     // 1) Read the complete config file into a boost::property_tree.
@@ -433,6 +434,7 @@ std::string AppConfig::load(const std::string &path)
     // Override missing or keys with their defaults.
     this->set_defaults();
     m_dirty = false;
+    BOOST_LOG_TRIVIAL(info) << "App configuration loaded successfully from: " << path;
     return "";
 }
 
@@ -511,6 +513,7 @@ void AppConfig::save()
     // To cope with that, we already made a backup of the config on Windows.
     rename_file(path_pid, path);
     m_dirty = false;
+    BOOST_LOG_TRIVIAL(info) << "App configuration saved to: " << path;
 }
 
 bool AppConfig::erase(const std::string &section, const std::string &key)

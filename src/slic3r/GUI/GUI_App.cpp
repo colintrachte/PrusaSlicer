@@ -890,6 +890,7 @@ GUI_App::GUI_App(EAppMode mode)
 
 GUI_App::~GUI_App()
 {
+    BOOST_LOG_TRIVIAL(info) << "PrusaSlicer shutdown";
     delete app_config;
     delete preset_bundle;
 }
@@ -1336,6 +1337,8 @@ void GUI_App::remove_desktop_files_dialog()
 
 bool GUI_App::on_init_inner()
 {
+    BOOST_LOG_TRIVIAL(info) << "PrusaSlicer " << SLIC3R_VERSION << " starting up, data dir: " << Slic3r::data_dir();
+
     // TODO: remove this when all asserts are gone.
     wxDisableAsserts();
 
@@ -1658,7 +1661,7 @@ bool GUI_App::on_init_inner()
 
         // An ugly solution to GH #5537 in which GUI_App::init_opengl (normally called from events wxEVT_PAINT
         // and wxEVT_SET_FOCUS before GUI_App::post_init is called) wasn't called before GUI_App::post_init and OpenGL wasn't initialized.
-        // Since issue #9774 Where same problem occured on MacOS Ventura, we decided to have this check on MacOS as well.
+        // Since issue #9774 Where same problem occurred on MacOS Ventura, we decided to have this check on MacOS as well.
 
 #if defined(__linux__) || defined(__APPLE__)
         if (!m_post_initialized && m_opengl_initialized) {
@@ -3223,15 +3226,15 @@ void GUI_App::MacOpenURL(const wxString& url)
         if (app_config && !app_config->get_bool("downloader_url_registered"))
         {
             notification_manager()->push_notification(NotificationType::URLNotRegistered);
-            BOOST_LOG_TRIVIAL(error) << "Recieved command to open URL, but it is not allowed in app configuration. URL: " << url;
+            BOOST_LOG_TRIVIAL(error) << "received command to open URL, but it is not allowed in app configuration. URL: " << url;
             return;
         }
 
         start_download(std::move(narrow_url));
     } else if (boost::starts_with(narrow_url, "prusaslicer://login")) {
-        plater()->get_user_account()->on_login_code_recieved(std::move(narrow_url));
+        plater()->get_user_account()->on_login_code_received(std::move(narrow_url));
     } else {
-        BOOST_LOG_TRIVIAL(error) << "MacOpenURL recieved improper URL: " << url;
+        BOOST_LOG_TRIVIAL(error) << "MacOpenURL received improper URL: " << url;
     }
 }
 
@@ -3369,7 +3372,7 @@ bool GUI_App::run_wizard(ConfigWizard::RunReason reason, ConfigWizard::StartPage
     wxCHECK_MSG(mainframe != nullptr, false, "Internal error: Main frame not created / null");
 
     // Loading of Config Wizard takes some time. 
-    // First part is to download neccessary data.
+    // First part is to download necessary data.
     // That is done on worker thread while nice modal progress is shown.
     // TRN: Progress dialog title
     get_preset_updater_wrapper()->wizard_sync(preset_bundle, app_config->orig_version(), mainframe, reason == ConfigWizard::RunReason::RR_USER, _L("Opening Configuration Wizard"));
@@ -3428,8 +3431,8 @@ void GUI_App::show_downloader_registration_dialog()
             ), SLIC3R_APP_NAME, SLIC3R_VERSION)
         , true, wxYES_NO);
     if (msg.ShowModal() == wxID_YES) {
-        auto downloader_worker = new DownloaderUtils::Worker(nullptr);
-        downloader_worker->perform_download_register(app_config->get("url_downloader_dest"));
+        if (DownloaderUtils::Worker::validate_and_save_download_path(app_config->get("url_downloader_dest")))
+            DownloaderUtils::Worker::perform_url_register();
 #if defined(__linux__) && defined(SLIC3R_DESKTOP_INTEGRATION) 
         if (DownloaderUtils::Worker::perform_registration_linux)
             DesktopIntegrationDialog::perform_downloader_desktop_integration();

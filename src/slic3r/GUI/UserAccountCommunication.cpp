@@ -459,7 +459,7 @@ void UserAccountCommunication::do_clear()
     m_next_token_refresh_at = 0;
 }
 
-void UserAccountCommunication::on_login_code_recieved(const std::string& url_message)
+void UserAccountCommunication::on_login_code_received(const std::string& url_message)
 {
     const std::string code = get_code_from_message(url_message);
     m_session->init_with_code(code, m_code_verifier);

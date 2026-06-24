@@ -88,7 +88,7 @@ TreeSupportMeshGroupSettings::TreeSupportMeshGroupSettings(const PrintObject &pr
     this->support_tree_tip_diameter = std::clamp(scaled<coord_t>(config.support_tree_tip_diameter.value), 0, this->support_tree_branch_diameter);
 }
 
-TreeSupportSettings::TreeSupportSettings(const TreeSupportMeshGroupSettings &mesh_group_settings, const SlicingParameters &slicing_params)
+TreeSupportSettings::TreeSupportSettings(const TreeSupportMeshGroupSettings &mesh_group_settings, const SlicingParameters &slicing_params, const PrintObject *print_object)
     : support_line_width(mesh_group_settings.support_line_width),
       layer_height(mesh_group_settings.layer_height),
       branch_radius(mesh_group_settings.support_tree_branch_diameter / 2),
@@ -144,6 +144,9 @@ TreeSupportSettings::TreeSupportSettings(const TreeSupportMeshGroupSettings &mes
     //interface_preference = InterfacePreference::SupportAreaOverwritesInterface;
     interface_preference = InterfacePreference::InterfaceAreaOverwritesSupport;
 
+    this->slicing_params = slicing_params;
+    this->print_object   = print_object;
+
     if (slicing_params.raft_layers() > 0) {
         // Fill in raft_layers with the heights of the layers below the first object layer.
         // First layer
@@ -174,6 +177,54 @@ TreeSupportSettings::TreeSupportSettings(const TreeSupportMeshGroupSettings &mes
             }
         }
     }
+}
+
+double TreeSupportSettings::layer_z(LayerIndex layer_idx) const
+{
+    if (layer_idx < LayerIndex(raft_layers.size()))
+        return raft_layers[layer_idx];
+    const LayerIndex obj_idx = layer_idx - LayerIndex(raft_layers.size());
+    if (print_object != nullptr) {
+        const auto &layers = print_object->layers();
+        if (obj_idx < LayerIndex(layers.size()))
+            return layers[obj_idx]->print_z;
+    }
+    return slicing_params.object_print_z_min + slicing_params.first_object_layer_height +
+           obj_idx * slicing_params.layer_height;
+}
+
+LayerIndex TreeSupportSettings::layer_idx_ceil(double z) const
+{
+    if (print_object != nullptr) {
+        const auto &layers = print_object->layers();
+        // Binary search for the first layer with print_z >= z.
+        auto it = std::lower_bound(layers.begin(), layers.end(), z,
+            [](const Layer *l, double val) { return l->print_z < val; });
+        return LayerIndex(raft_layers.size()) +
+               std::max<LayerIndex>(0, LayerIndex(it - layers.begin()));
+    }
+    return LayerIndex(raft_layers.size()) +
+           std::max<LayerIndex>(0, LayerIndex(ceil(
+               (z - slicing_params.object_print_z_min - slicing_params.first_object_layer_height)
+               / slicing_params.layer_height)));
+}
+
+LayerIndex TreeSupportSettings::layer_idx_floor(double z) const
+{
+    if (print_object != nullptr) {
+        const auto &layers = print_object->layers();
+        // Binary search for the last layer with print_z <= z.
+        auto it = std::upper_bound(layers.begin(), layers.end(), z,
+            [](double val, const Layer *l) { return val < l->print_z; });
+        if (it != layers.begin())
+            --it;
+        return LayerIndex(raft_layers.size()) +
+               std::max<LayerIndex>(0, LayerIndex(it - layers.begin()));
+    }
+    return LayerIndex(raft_layers.size()) +
+           std::max<LayerIndex>(0, LayerIndex(floor(
+               (z - slicing_params.object_print_z_min - slicing_params.first_object_layer_height)
+               / slicing_params.layer_height)));
 }
 
 #if defined(TREE_SUPPORT_SHOW_ERRORS) && defined(_WIN32)

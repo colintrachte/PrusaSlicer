@@ -302,7 +302,7 @@ ExPolygon create_mountains(double size) {
                       {size / 7, size}});
 }
 
-/// Neighbor points create trouble for voronoi - test of neccessary offseting(closing) of contour
+/// Neighbor points create trouble for voronoi - test of necessary offseting(closing) of contour
 ExPolygon create_cylinder_bottom_slice() {
     indexed_triangle_set its_cylinder = its_make_cylinder(6.6551999999999998, 11.800000000000001);
     MeshSlicingParams param;

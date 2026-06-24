@@ -209,7 +209,7 @@ LayerSupportPoints generate_support_points(
 );
 } // namespace Slic3r::sla
 
-// TODO: Not sure if it is neccessary & Should be in another file
+// TODO: Not sure if it is necessary & Should be in another file
 namespace Slic3r{
 class AABBMesh;
 namespace sla {

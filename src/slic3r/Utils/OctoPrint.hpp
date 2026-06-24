@@ -31,7 +31,7 @@ public:
     virtual bool test(wxString &curl_msg) const override;
     wxString get_test_ok_msg () const override;
     wxString get_test_failed_msg (wxString &msg) const override;
-    bool upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const override;
+    bool upload(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const override;
     bool has_auto_discovery() const override { return true; }
     bool can_test() const override { return true; }
     PrintHostPostUploadActions get_post_upload_actions() const override { return PrintHostPostUploadAction::StartPrint; }
@@ -41,10 +41,10 @@ public:
 
 protected:
 #ifdef WIN32
-    virtual bool upload_inner_with_resolved_ip(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn, const boost::asio::ip::address& resolved_addr) const;
+    virtual bool upload_inner_with_resolved_ip(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn, const boost::asio::ip::address& resolved_addr) const;
 #endif
     virtual bool validate_version_text(const boost::optional<std::string> &version_text) const;
-    virtual bool upload_inner_with_host(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const;
+    virtual bool upload_inner_with_host(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const;
 
     std::string m_host;
     std::string m_apikey;
@@ -79,12 +79,12 @@ public:
 protected:
     bool test(wxString& curl_msg) const override;
     bool validate_version_text(const boost::optional<std::string>& version_text) const override;
-    bool upload_inner_with_host(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const override;
+    bool upload_inner_with_host(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const override;
 
     void set_auth(Http& http) const override;
     virtual void set_http_post_header_args(Http& http, PrintHostPostUploadAction post_action) const;
 #ifdef WIN32
-    bool upload_inner_with_resolved_ip(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn, const boost::asio::ip::address& resolved_addr) const override;
+    bool upload_inner_with_resolved_ip(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn, const boost::asio::ip::address& resolved_addr) const override;
 #endif
 
     // Host authorization type.
@@ -95,8 +95,8 @@ protected:
 
 private:
     bool test_with_method_check(wxString& curl_msg, bool& use_put) const;
-    bool put_inner(PrintHostUpload upload_data, std::string url, const std::string& name, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const;
-    bool post_inner(PrintHostUpload upload_data, std::string url, const std::string& name, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const;
+    bool put_inner(PrintHostUpload upload_data, std::string url, const std::string& name, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const;
+    bool post_inner(PrintHostUpload upload_data, std::string url, const std::string& name, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const;
 #ifdef WIN32
     bool test_with_resolved_ip_and_method_check(wxString& curl_msg, bool& use_put) const;
 #endif

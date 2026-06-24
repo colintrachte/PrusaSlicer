@@ -706,14 +706,14 @@ GroundConnection deepsearch_ground_connection(
     double end_radius = wideningfn(Ball{bridge_end, bridge_r}, DOWN, down_l);
     double base_r = std::max(sm.cfg.base_radius_mm, end_radius);
 
-    // Even if the search was not succesful, the result is populated by the
+    // Even if the search was not successful, the result is populated by the
     // source and the last best result of the optimization.
     conn.path.emplace_back(source);
     if (bridge_l > EPSILON)
         conn.path.emplace_back(Junction{bridge_end, bridge_r});
 
     // The resulting ground connection is only valid if the pillar base is set.
-    // At this point it will only be set if the search was succesful.
+    // At this point it will only be set if the search was successful.
     if (z_fn(opt::Input<3>({plr, azm, bridge_l})) <= gndlvl)
         conn.pillar_base =
             Pedestal{gp, sm.cfg.base_height_mm, base_r, end_radius};
@@ -823,7 +823,7 @@ bool optimize_anchor_placement(Ex                     policy,
     anchor.width_mm = std::get<2>(oresult.optimum);
 
     if (oresult.score < anchor.fullwidth()) {
-        // Unsuccesful search, the anchor does not fit into its intended space.
+        // Unsuccessful search, the anchor does not fit into its intended space.
         return false;
     }
 

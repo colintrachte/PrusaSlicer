@@ -709,9 +709,9 @@ private:
 		// sets cancel button callback
 		void			    set_cancel_callback(std::function<bool()> callback) { m_cancel_callback = callback; }
 		bool                has_cancel_callback() const { return m_cancel_callback != nullptr; }
-		// sets SlicingProgressState, negative percent means canceled, returns true if state was set succesfully.
+		// sets SlicingProgressState, negative percent means canceled, returns true if state was set successfully.
 		bool				set_progress_state(float percent);
-		// sets SlicingProgressState, percent is used only at progress state. Returns true if state was set succesfully.
+		// sets SlicingProgressState, percent is used only at progress state. Returns true if state was set successfully.
 		bool				set_progress_state(SlicingProgressState state,float percent = 0.f);
 		// sets additional string of print info and puts notification into Completed state.
 		void			    set_print_info(const std::string& info);

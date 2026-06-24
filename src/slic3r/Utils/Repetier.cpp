@@ -115,7 +115,7 @@ wxString Repetier::get_test_failed_msg (wxString &msg) const
         , _L("Note: Repetier version at least 0.90.0 is required."));
 }
 
-bool Repetier::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const
+bool Repetier::upload(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const
 {
     const char *name = get_name();
 
@@ -166,7 +166,7 @@ bool Repetier::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, Error
             res = false;
         })
         .on_progress([&](Http::Progress progress, bool &cancel) {
-            prorgess_fn(std::move(progress), cancel);
+            progress_fn(std::move(progress), cancel);
             if (cancel) {
                 // Upload was canceled
                 BOOST_LOG_TRIVIAL(info) << "Repetier: Upload canceled";

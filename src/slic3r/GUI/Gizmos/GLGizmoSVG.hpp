@@ -47,14 +47,14 @@ public:
     /// </summary>
     /// <param name="volume_type">Object part / Negative volume / Modifier</param>
     /// <param name="mouse_pos">Define position of new volume</param>
-    /// <returns>True on succesfull start creation otherwise False</returns>
+    /// <returns>True on successfull start creation otherwise False</returns>
     bool create_volume(ModelVolumeType volume_type, const Vec2d &mouse_pos); // first open file dialog
 
     /// <summary>
     /// Create new text without given position
     /// </summary>
     /// <param name="volume_type">Object part / Negative volume / Modifier</param>
-    /// <returns>True on succesfull start creation otherwise False</returns>
+    /// <returns>True on successfull start creation otherwise False</returns>
     bool create_volume(ModelVolumeType volume_type); // first open file dialog
 
     /// <summary>
@@ -63,7 +63,7 @@ public:
     /// <param name="svg_file">File path</param>
     /// <param name="mouse_pos">Position on screen where to create volume</param>
     /// <param name="volume_type">Object part / Negative volume / Modifier</param>
-    /// <returns>True on succesfull start creation otherwise False</returns>
+    /// <returns>True on successfull start creation otherwise False</returns>
     bool create_volume(std::string_view svg_file, const Vec2d &mouse_pos, ModelVolumeType volume_type = ModelVolumeType::MODEL_PART);
     bool create_volume(std::string_view svg_file, ModelVolumeType volume_type = ModelVolumeType::MODEL_PART);
 

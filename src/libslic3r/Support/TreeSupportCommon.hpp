@@ -233,7 +233,14 @@ struct TreeSupportSettings
 {
 public:
     TreeSupportSettings() = default; // required for the definition of the config variable in the TreeSupportGenerator class.
-    explicit TreeSupportSettings(const TreeSupportMeshGroupSettings &mesh_group_settings, const SlicingParameters &slicing_params);
+    explicit TreeSupportSettings(const TreeSupportMeshGroupSettings &mesh_group_settings, const SlicingParameters &slicing_params, const PrintObject *print_object = nullptr);
+
+    // Z coordinate of the layer at layer_idx, respecting variable layer heights when a PrintObject is available.
+    double layer_z(LayerIndex layer_idx) const;
+    // First layer at or above z (ceil).
+    LayerIndex layer_idx_ceil(double z) const;
+    // Last layer at or below z (floor).
+    LayerIndex layer_idx_floor(double z) const;
 
     // some static variables dependent on other meshes that are not currently processed.
     // Has to be static because TreeSupportConfig will be used in TreeModelVolumes as this reduces redundancy.
@@ -380,6 +387,10 @@ public:
 
     // Extra raft layers below the object.
     std::vector<coordf_t> raft_layers;
+    // Slicing parameters for the object being supported (used for uniform-height fallback in layer_z()).
+    SlicingParameters slicing_params;
+    // Pointer to the PrintObject being supported; non-null enables variable layer height support.
+    const PrintObject *print_object { nullptr };
 
 public:
     bool operator==(const TreeSupportSettings& other) const

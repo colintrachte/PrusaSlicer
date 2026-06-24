@@ -83,7 +83,7 @@ wxString FlashAir::get_test_failed_msg (wxString &msg) const
                     , _u8L("Note: FlashAir with firmware 2.00.02 or newer and activated upload function is required."));
 }
 
-bool FlashAir::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const
+bool FlashAir::upload(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const
 {
 	const char *name = get_name();
 
@@ -126,7 +126,7 @@ bool FlashAir::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, Error
 			res = boost::icontains(body, "SUCCESS");
 			if (! res) {
 				BOOST_LOG_TRIVIAL(error) << boost::format("%1%: Request completed but no SUCCESS message was received.") % name;
-				error_fn(format_error(body, L("Unknown error occured"), 0));
+				error_fn(format_error(body, L("Unknown error occurred"), 0));
 			}
 		})
 		.perform_sync();
@@ -147,7 +147,7 @@ bool FlashAir::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, Error
             res = boost::icontains(body, "SUCCESS");
             if (! res) {
                 BOOST_LOG_TRIVIAL(error) << boost::format("%1%: Request completed but no SUCCESS message was received.") % name;
-                error_fn(format_error(body, L("Unknown error occured"), 0));
+                error_fn(format_error(body, L("Unknown error occurred"), 0));
             }
         })
         .perform_sync();
@@ -163,7 +163,7 @@ bool FlashAir::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, Error
 			res = boost::icontains(body, "SUCCESS");
 			if (! res) {
 				BOOST_LOG_TRIVIAL(error) << boost::format("%1%: Request completed but no SUCCESS message was received.") % name;
-				error_fn(format_error(body, L("Unknown error occured"), 0));
+				error_fn(format_error(body, L("Unknown error occurred"), 0));
 			}
 		})
 		.on_error([&](std::string body, std::string error, unsigned status) {
@@ -172,7 +172,7 @@ bool FlashAir::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, Error
 			res = false;
 		})
 		.on_progress([&](Http::Progress progress, bool &cancel) {
-			prorgess_fn(std::move(progress), cancel);
+			progress_fn(std::move(progress), cancel);
 			if (cancel) {
 				// Upload was canceled
 				BOOST_LOG_TRIVIAL(info) << boost::format("%1%: Upload canceled") % name;

@@ -66,7 +66,7 @@ wxString MKS::get_test_failed_msg(wxString& msg) const
 	return GUI::format_wxstr("%s: %s", _L("Could not connect to MKS"), msg);
 }
 
-bool MKS::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn error_fn, InfoFn info_fn) const
+bool MKS::upload(PrintHostUpload upload_data, ProgressFn progress_fn, ErrorFn error_fn, InfoFn info_fn) const
 {
 	bool res = true;
 
@@ -86,7 +86,7 @@ bool MKS::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn er
 		int err_code = get_err_code_from_body(body);
 		if (err_code != 0) {
 			BOOST_LOG_TRIVIAL(error) << boost::format("MKS: Request completed but error code was received: %1%") % err_code;
-			error_fn(format_error(body, L("Unknown error occured"), 0));
+			error_fn(format_error(body, L("Unknown error occurred"), 0));
 			res = false;
 		}
 		else if (upload_data.post_action == PrintHostPostUploadAction::StartPrint) {
@@ -103,7 +103,7 @@ bool MKS::upload(PrintHostUpload upload_data, ProgressFn prorgess_fn, ErrorFn er
 			res = false;
 		})
 		.on_progress([&](Http::Progress progress, bool& cancel) {
-			prorgess_fn(std::move(progress), cancel);
+			progress_fn(std::move(progress), cancel);
 			if (cancel) {
 				// Upload was canceled
 				BOOST_LOG_TRIVIAL(info) << "MKS: Upload canceled";

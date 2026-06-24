@@ -1534,7 +1534,7 @@ static float get_wipe_depth(float volume, float layer_height, float perimeter_wi
 
 
 
-// Appends a toolchange into m_plan and calculates neccessary depth of the corresponding box
+// Appends a toolchange into m_plan and calculates necessary depth of the corresponding box
 void WipeTower::plan_toolchange(float z_par, float layer_height_par, unsigned int old_tool,
                                 unsigned int new_tool, float wipe_volume)
 {

@@ -197,7 +197,7 @@ void SpinInputBase::render(wxDC& dc)
     StaticBox::render(dc);
     int    states = state_handler.states();
     wxSize size = GetSize();
-    // draw seperator of buttons
+    // draw separator of buttons
     wxPoint pt = button_inc->GetPosition();
     pt.y = size.y / 2;
     dc.SetPen(wxPen(border_color.defaultColor()));

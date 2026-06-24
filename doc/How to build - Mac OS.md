@@ -1,7 +1,7 @@
 
 # Building PrusaSlicer on macOS
 
-To build PrusaSlicer on macOS, you will need Xcode, which is available through Apple's App Store. In addition, you will need couple of other tools, all of which are available through [brew](https://brew.sh/): use
+To build PrusaSlicer on macOS, you will need Xcode, which is available through Apple's App Store. In addition, you will need a couple of other tools, all of which are available through [brew](https://brew.sh/): use
 
 ```
 brew update
@@ -11,7 +11,7 @@ brew upgrade
 
 to install them.
 
-It may help to skim over this document's [Troubleshooting](#troubleshooting)](#troubleshooting) first, as you may find helpful workarounds documented there.
+It may help to skim over this document's [Troubleshooting](#troubleshooting) first, as you may find helpful workarounds documented there.
 
 ### Dependencies
 

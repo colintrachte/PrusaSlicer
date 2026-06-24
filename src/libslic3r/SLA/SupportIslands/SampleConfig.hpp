@@ -25,7 +25,7 @@ struct PrepareSupportConfig
     float peninsula_self_supported_width = scale_(1.5); // [in scaled mm]
 
     // To be able support same 2d area multipletimes,
-    // It is neccessary to remove support point form near KDTree structure
+    // It is necessary to remove support point form near KDTree structure
     // Must be greater than surface texture and lower than self supporting area
     // May be use maximal island distance
     float removing_delta = scale_(5.);
@@ -37,7 +37,7 @@ struct PrepareSupportConfig
 
 /// <summary>
 /// Configuration DTO 
-/// Define where is neccessary to put support point on island
+/// Define where is necessary to put support point on island
 /// Mainly created by SampleConfigFactory
 /// </summary>
 struct SampleConfig

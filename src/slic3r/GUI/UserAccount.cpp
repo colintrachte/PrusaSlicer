@@ -124,9 +124,9 @@ void UserAccount::request_refresh()
     m_communication->request_refresh();
 }
 
-bool UserAccount::on_login_code_recieved(const std::string& url_message)
+bool UserAccount::on_login_code_received(const std::string& url_message)
 {
-    m_communication->on_login_code_recieved(url_message);
+    m_communication->on_login_code_received(url_message);
     return true;
 }
 

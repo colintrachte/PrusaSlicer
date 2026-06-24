@@ -1,7 +1,7 @@
 # Building PrusaSlicer on Windows
 
 
-## 0. Prerequisities
+## 0. Prerequisites
 
 The following tools need to be installed on your computer:
 - Microsoft Visual Studio version 16 2019 or 17 2022
@@ -13,7 +13,7 @@ The following tools need to be installed on your computer:
 
 ## 1. Download sources
 
-Clone the respository. Use a directory relatively close to the drive root, so the path is not too long. Avoid spaces and non-ASCII characters. To place it in `C:\src\PrusaSlicer`, run:
+Clone the repository. Use a directory relatively close to the drive root, so the path is not too long. Avoid spaces and non-ASCII characters. To place it in `C:\src\PrusaSlicer`, run:
 ```
 c:> mkdir src
 c:> cd src

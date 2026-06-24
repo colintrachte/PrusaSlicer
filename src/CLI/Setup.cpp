@@ -228,7 +228,7 @@ static bool setup_common()
     }
     catch (const std::runtime_error& ex) {
         std::string caption = std::string(SLIC3R_APP_NAME) + " Error";
-        std::string text = std::string("An error occured while setting up locale.\n") + (
+        std::string text = std::string("An error occurred while setting up locale.\n") + (
 #if !defined(_WIN32) && !defined(__APPLE__)
             // likely some linux system
             "You may need to reconfigure the missing locales, likely by running the \"locale-gen\" and \"dpkg-reconfigure locales\" commands.\n"

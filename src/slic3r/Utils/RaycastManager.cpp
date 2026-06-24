@@ -105,7 +105,7 @@ void RaycastManager::actualize(const ModelInstance &instance, const ISkip *skip,
  
 std::optional<RaycastManager::Hit> RaycastManager::first_hit(const Vec3d& point, const Vec3d& direction, const ISkip *skip) const
 {
-    // Improve: it is not neccessaru to use AABBMesh and calc normal for every hit
+    // Improve: it is not necessaru to use AABBMesh and calc normal for every hit
     
     // Results
     const AABBMesh *hit_mesh = nullptr;

@@ -143,7 +143,7 @@ public:
 	// See the `Progress` structure for description of the data passed.
 	// Writing a true-ish value into the cancel reference parameter cancels the request.
 	Http& on_progress(ProgressFn fn);
-	// Callback called after succesful HTTP request (after on_complete callback)
+	// Callback called after successful HTTP request (after on_complete callback)
 	// Called if curl_easy_getinfo resolved just used IP address.
 	Http& on_ip_resolve(IPResolveFn fn);
 
