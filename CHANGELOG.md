@@ -151,12 +151,35 @@ Also fixed typos in `deps/CMakeLists.txt`:
 
 ---
 
+## Security Dependency Upgrades — 2026-06-24
+
+### Dependencies Updated
+
+- **libpng 1.6.35 → 1.6.58** (`deps/+PNG/PNG.cmake`, `deps/+PNG/CMakeLists.txt.patched`)
+  Updated download URL and SHA256 hash. Updated `PNGLIB_RELEASE` version constant in the
+  patched CMakeLists. The 1.6.x API is fully backward-compatible.
+  **macOS caveat:** `deps/+PNG/PNG.patch` targets specific line numbers in 1.6.35 sources
+  and will need revision before a macOS deps rebuild.
+
+- **CURL 7.75.0 → 8.21.0** (`deps/+CURL/CURL.cmake`)
+  Updated download URL (tag `curl-8_21_0`) and SHA256 hash. All existing cmake flags
+  (`HTTP_ONLY`, `USE_OPENSSL`, `CMAKE_USE_SCHANNEL`, etc.) remain unchanged and are
+  compatible with CURL 8.x.
+
+- **OpenSSL 1.1.0l → 3.4.6 LTS** (`deps/+OpenSSL/OpenSSL.cmake`)
+  Updated download URL to the official OpenSSL release asset and SHA256 from the published
+  `.sha256` file. Removed `no-ssl3-method` configure flag (SSLv3 is already disabled by
+  default in OpenSSL 3.x). Linux-only dependency. PrusaSlicer's OpenSSL usage
+  (`UserAccountCommunication.cpp`, `Http.cpp`) already uses the 1.1.0+ `EVP_MD_CTX_new`/
+  `EVP_MD_CTX_free` API — no source code changes required.
+
+---
+
 ## Remaining Work (see TODO.md)
 
 ### Critical — Security
-- Upgrade OpenSSL `1.1.0l` → `3.4.x` LTS (EOL 2019-09-11; needs CURL upgrade first)
-- Upgrade CURL `7.75.0` → `8.x` (multiple CVEs; enables OpenSSL 3)
-- Upgrade libpng `1.6.35` → `1.6.43+` (multiple CVE fixes since 2018)
+- Deps upgraded (libpng 1.6.58, CURL 8.21.0, OpenSSL 3.4.6). Full deps rebuild + retest required.
+- `deps/+PNG/PNG.patch` (macOS only) needs revision for libpng 1.6.58 before macOS deps build.
 
 ### Critical — Crashes
 - Investigate crash slicing specific files (#14622)

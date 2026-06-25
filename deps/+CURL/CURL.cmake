@@ -58,10 +58,10 @@ endif ()
 
 add_cmake_project(CURL
   # GIT_REPOSITORY      https://github.com/curl/curl.git
-  # GIT_TAG             curl-7_75_0
-  URL                 https://github.com/curl/curl/archive/refs/tags/curl-7_75_0.zip
-  URL_HASH            SHA256=a63ae025bb0a14f119e73250f2c923f4bf89aa93b8d4fafa4a9f5353a96a765a
-  # PATCH_COMMAND       ${GIT_EXECUTABLE} checkout -f -- . && git clean -df && 
+  # GIT_TAG             curl-8_21_0
+  URL                 https://github.com/curl/curl/archive/refs/tags/curl-8_21_0.zip
+  URL_HASH            SHA256=767194800b41f93bc76e9ed4e85e5fea0984e35dab84badb68c27c0c3e19bf18
+  # PATCH_COMMAND       ${GIT_EXECUTABLE} checkout -f -- . && git clean -df &&
   #                     ${GIT_EXECUTABLE} apply --whitespace=fix ${CMAKE_CURRENT_LIST_DIR}/curl-mods.patch
   PATCH_COMMAND       "${_patch_command}"
   CMAKE_ARGS
